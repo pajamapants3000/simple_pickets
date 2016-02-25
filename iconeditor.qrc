@@ -1,0 +1,12 @@
+<RCC>
+<qresource>
+    <file>images/newFile.png</file>
+    <file>images/openFile.png</file>
+    <file>images/saveFile.png</file>
+    <file>images/saveasFile.png</file>
+    <file>images/exit.png</file>
+    <file>images/undo.png</file>
+    <file>images/redo.png</file>
+    <file>images/about.png</file>
+</qresource>
+</RCC>

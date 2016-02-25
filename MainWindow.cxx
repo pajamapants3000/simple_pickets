@@ -26,7 +26,11 @@ MainWindow::MainWindow()
     createMenus();
 
     setWindowIcon(QIcon(":/images/main.png"));
+    setWindowTitle(QString("[untitled][*] | Simple Pickets"));
     setAttribute(Qt::WA_DeleteOnClose);
+
+    connect(editor->scroller->iconViewGrid, SIGNAL(modified()),
+            this, SLOT(iconModified()));
 
 }
 
@@ -112,9 +116,13 @@ void MainWindow::createMenus()/*{{{*/
 /*}}}*/
 bool MainWindow::modified()/*{{{*/
 {
-    return true;
+    return isWindowModified();
 }
 /*}}}*/
+void MainWindow::iconModified()/*{{{*/
+{
+    setWindowModified(true);
+}/*}}}*/
 void MainWindow::newFile()/*{{{*/
 {
     if (okToContinue())
@@ -123,6 +131,8 @@ void MainWindow::newFile()/*{{{*/
         QImage* image = new QImage(16, 16, QImage::Format_ARGB32);
         image->fill(qRgba(0, 0, 0, 0));
         editor->scroller->iconViewGrid->setIconImage(*image);
+        setWindowModified(false);
+        setWindowTitle(QString("[untitled][*] | Simple Pickets"));
     }
 }
 /*}}}*/
@@ -132,15 +142,24 @@ bool MainWindow::openFile()/*{{{*/
     {
         QString dir("/media/Sync/google_drive-otripleg/Code/C++/Qt4");
         dir += "/Blanchette_and_Summerfield/Part_I/Chapter_05/icon_editor";
-        dir += "/IconEditorDialog++/saves";
+        dir += "/simple_pickets/saves";
             QString fileName = QFileDialog::getOpenFileName(this,
                 QString(tr("Open Icon File")), dir, tr("Icons (*.png *.ico)"));
         if (!fileName.isEmpty())
-            return editor->loadFile(fileName);
+        {
+            curFile = fileName;
+            if (editor->loadFile(fileName))
+            {
+                setWindowModified(false);
+                setWindowTitle(curFile + "[*] | Simple Pickets");
+                return true;
+            }
+            else
+                return false;
+        }
         else
             return false;
     }
-
     else
         return false;
 }
@@ -149,21 +168,31 @@ bool MainWindow::saveFile()/*{{{*/
 {
     if (curFile.isEmpty())
         return saveasFile();
-    return editor->writeFile(curFile);
+    if (editor->writeFile(curFile))
+    {
+        setWindowModified(false);
+        return true;
+    }
+    else
+        return false;
 }
 /*}}}*/
 bool MainWindow::saveasFile()/*{{{*/
 {
     QString dir("/media/Sync/google_drive-otripleg/Code/C++/Qt4");
-    dir += "Blanchette_and_Summerfield/Part_I/Chapter_05/icon_editor/IconEditorDialog++/saves";
-
+    dir += "Blanchette_and_Summerfield/Part_I/Chapter_05/icon_editor";
+    dir += "/simple_pickets/saves";
     QString fileName = QFileDialog::getSaveFileName(this,
             QString(tr("Save Icon File")), dir, tr("Icons (*.png *.ico)"));
 
-    if (!fileName.isEmpty())
+    if (fileName.isEmpty())
+        return false;
+    curFile = fileName;
+    if (saveFile())
     {
-        curFile = fileName;
-        return editor->writeFile(fileName);
+        setWindowModified(false);
+        setWindowTitle(curFile + "[*] | Simple Pickets");
+        return true;
     }
     else
         return false;
@@ -174,16 +203,17 @@ bool MainWindow::okToContinue()/*{{{*/
     return true;
 }
 /*}}}*/
-// do we still need this with the QMainWindow?
-/*
+// event: we may want to just filter out ESC presses and implement the exit/*{{{*/
+//+shortcut key(s) manually.
 bool MainWindow::event(QEvent* event)
 {
-    if (event->type() == QEvent::ChildRemoved)  // child closed
+    // if editor area was closed (by pressing ESC)
+    if (event->type() == QEvent::ChildRemoved && editor->isHidden())
     {
-        close();                                // so close everything
+        close();                                // close everything
         return true;
     }
     else
         return QWidget::event(event);
 }
-*/
+/*}}}*/

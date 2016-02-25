@@ -26,10 +26,18 @@
 *.exe
 *.out
 *.app
+simple_pickets
 
 # Saved icons
 saves/*
 
+# Qt files (will eventually remove *.pro and Makefile)
+moc_*
+qrc_*
+*.pro
+Makefile
+
 # vim swap files
 *.swp
+
 

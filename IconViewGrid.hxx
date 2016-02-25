@@ -30,6 +30,9 @@ public:
     QImage iconImage() const { return image; }
     QSize sizeHint() const;
 
+signals:
+    void modified();
+
 public slots:
     void setPenColor(const QColor &newColor);
     void setZoomFactor(int newZoom);

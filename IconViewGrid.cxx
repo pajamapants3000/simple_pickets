@@ -137,6 +137,7 @@ void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)
         else
             image.setPixel(i, j, qRgba(0, 0, 0, 0));
         update(pixelRect(i, j));
+        emit modified();
     }
 }
 

@@ -22,7 +22,7 @@ public:
 
 private:
     // reimplement QWidget::event() to close when any child closes.
-//    bool event(QEvent* event);
+    bool event(QEvent* event);
 
 private slots:
     void newFile();
@@ -30,6 +30,7 @@ private slots:
     bool saveFile();
     bool saveasFile();
     bool modified();
+    void iconModified();
 
 private:
     void createActions();
