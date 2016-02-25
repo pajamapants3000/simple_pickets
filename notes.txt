@@ -1,0 +1,39 @@
+IconEditorDialog++
+
+LabelledSpinHex - as is
+ARGBSetterWidget - as is
+ColourButton - as is
+
+IconEditor -> IconEditorScroll
+Simply add both H and V scrollbars;
+
+IconEditorDialog -> IconEditorDialogPP
+Add save and load modal popup dialogs; set titlebar to name
+of current icon; Add widget for setting zoom level;
+
+All of the above: improve on the sizing, resizing, positioning, and maybe
+add some themeability.
+
+So far so good - I got the basic layout from IconEditorDialog set, plus
+the scrolling added.
+My newish goal is a fully-featured icon-editing program (gradually more
+fully-featured at least). I will be putting the end result in a QMainWindow,
+which means menus, toolbar, and status bar. also potentially docking
+widgets - I'm thinking zoom... and.... maybe abandon ARGBSetterWidget and
+put these in the docking bar? at least zoom and dimensions.
+
+
+In addition to the colored button, I want a colored frame (it can be smallish),
+indicating the currently selected color.
+
+Another cool idea for later functionality to add is shape creators, like
+circles, rectangles, straight lines, etc.
+Another would be a color palette designer, or at least the ability to switch
+the button color and the button text color for a complementary color.
+
+One of the first things I need to implement is save and load funcitonality.
+
+I also need a cool name!
+
+
+
