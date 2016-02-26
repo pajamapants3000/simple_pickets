@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 02/25/2016
+ * Updated: 02/26/2016
  */
 
 #include <QLabel>
@@ -14,9 +14,11 @@
 #include <QHBoxLayout>
 #include <QFile>
 #include <QMessageBox>
+#include <QDebug>
+#include <QKeyEvent>
+
 
 #include "Editor.hxx"
-#include "ARGBSetterWidget.hxx"
 #include "Scroller.cxx"
 
 Editor::Editor(QWidget* parent, Qt::WindowFlags f)/*{{{*/
@@ -37,7 +39,7 @@ Editor::Editor(QWidget* parent, Qt::WindowFlags f)/*{{{*/
 /*}}}*/
     scroller = new Scroller();
 
-    ARGBSetterWidget* setters = new ARGBSetterWidget();/*{{{*/
+    setters = new ARGBSetterWidget();/*{{{*/
     connect(setters, SIGNAL(colourChanged(const QColor&)),
             scroller->iconViewGrid, SLOT(setPenColor(const QColor&)));
 /*}}}*/

@@ -10,13 +10,15 @@
  * Notes  : colourChanged signal carries the new color to be used when the
  *+user clicks the button
  * Created: 02/15/2016
- * Updated: 02/24/2016
+ * Updated: 02/26/2016
  */
 
 #include <QFormLayout>
 #include <QLabel>
 
 #include "ARGBSetterWidget.hxx"
+#include "EscapeFilter.hxx"
+
 
 ARGBSetterWidget::ARGBSetterWidget(int red, int green, int blue, int alpha,
         QWidget* parent) : QWidget(parent)

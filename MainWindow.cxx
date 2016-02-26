@@ -5,17 +5,18 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 02/25/2016
+ * Updated: 02/26/2016
+ * TODO: Organize functions, slots, etc.
  */
 
 #include <QAction>
 #include <QMenuBar>
 #include <QFileDialog>
-
+#include <QMessageBox>
 
 #include "MainWindow.hxx"
 
-MainWindow::MainWindow()
+MainWindow::MainWindow()/*{{{*/
 {
 
     editor = new Editor();
@@ -32,8 +33,27 @@ MainWindow::MainWindow()
     connect(editor->scroller->iconViewGrid, SIGNAL(modified()),
             this, SLOT(iconModified()));
 
+    filterEscape();
 }
-
+/*}}}*/
+void MainWindow::filterEscape()/*{{{*/
+{
+    escapeFilter = new EscapeFilter;
+    editor->installEventFilter(escapeFilter);
+    editor->setters->installEventFilter(escapeFilter);
+    for (int i = 0; i < 4; ++i)
+    {
+        editor->setters->colorSetters[i]->installEventFilter(escapeFilter);
+    }
+    connect(escapeFilter, SIGNAL(escapeKeyPressed()),
+            this, SLOT(escapeSlot()));
+}
+/*}}}*/
+void MainWindow::escapeSlot()/*{{{*/
+{
+    // Insert desired action later!
+}
+/*}}}*/
 void MainWindow::createActions()/*{{{*/
 {
     newFileAction = new QAction(tr("&New"), this);
@@ -200,11 +220,29 @@ bool MainWindow::saveasFile()/*{{{*/
 /*}}}*/
 bool MainWindow::okToContinue()/*{{{*/
 {
+    if (isWindowModified())
+    {
+        int r = QMessageBox::warning(this, tr("Spreadsheet"),
+                        tr("The document has been modified.\n"
+                           "Do you want to save your changes?"),
+                        QMessageBox::Yes | QMessageBox::No
+                                         | QMessageBox::Cancel);
+        if (r == QMessageBox::Yes)
+            return saveFile();
+        else if (r == QMessageBox::Cancel)
+            return false;
+    }
     return true;
 }
 /*}}}*/
-// event: we may want to just filter out ESC presses and implement the exit/*{{{*/
-//+shortcut key(s) manually.
+void MainWindow::close()/*{{{*/
+{
+    if (okToContinue())
+        QMainWindow::close();
+}
+/*}}}*/
+
+/* Keep this for now because this tactic may come in handy{{{
 bool MainWindow::event(QEvent* event)
 {
     // if editor area was closed (by pressing ESC)
@@ -216,4 +254,5 @@ bool MainWindow::event(QEvent* event)
     else
         return QWidget::event(event);
 }
-/*}}}*/
+}}}*/
+

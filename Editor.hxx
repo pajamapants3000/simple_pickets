@@ -6,12 +6,13 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 02/25/2016
+ * Updated: 02/26/2016
  */
 
 #include <QDialog>
 
 #include "Scroller.hxx"
+#include "ARGBSetterWidget.hxx"
 
 class Editor : public QDialog
 {
@@ -21,6 +22,7 @@ public:
     Editor(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
     Scroller* scroller;
+    ARGBSetterWidget* setters;
     bool writeFile(const QString& fileName);
     bool loadFile(const QString& fileName);
 };

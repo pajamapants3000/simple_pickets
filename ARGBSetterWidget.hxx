@@ -9,7 +9,7 @@
  * Notes  : colourChanged signal carries the new color to be used when the
  *+user clicks the button
  * Created: 02/15/2016
- * Updated: 02/24/2016
+ * Updated: 02/26/2016
  */
 
 #include <QWidget>
@@ -28,10 +28,10 @@ public:
     ARGBSetterWidget(int red = 0, int green = 0, int blue = 0, int alpha = 255,
             QWidget* parent = 0);
     QColor colour() const { return _colour; }
+    HexSpinBox* colorSetters[4];   // ARGB HexSpinBoxes
 
 private:
     QColor _colour;         // current in-use color, from last button click
-    HexSpinBox* colorSetters[4];   // ARGB HexSpinBoxes
 
 signals:
     void colourChanged(const QColor& newColor) const;

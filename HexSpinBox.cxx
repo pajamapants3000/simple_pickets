@@ -1,6 +1,9 @@
 // hexspinbox.cxx
 // Custom Qt Widget - HexSpinBox - implementation
 
+#include <QDebug>
+#include <QKeyEvent>
+
 #include "HexSpinBox.hxx"
 
 HexSpinBox::HexSpinBox(const int& i_value, QWidget *parent) : QSpinBox(parent)
