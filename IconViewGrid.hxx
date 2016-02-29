@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT - See LICENSE
  * Created: 02/24/2016
- * Updated: 02/25/2016
+ * Updated: 02/28/2016
  */
 
 #ifndef ICONVIEWGRID_HXX
@@ -32,6 +32,7 @@ public:
 
 signals:
     void modified();
+    void zoomed();
 
 public slots:
     void setPenColor(const QColor &newColor);

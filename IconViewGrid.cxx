@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT; See LICENSE
  * Created: 02/24/2016
- * Updated: 02/25/2016
+ * Updated: 02/28/2016
  */
 
 #include <QPainter>
@@ -13,7 +13,7 @@
 
 #include "IconViewGrid.hxx"
 
-IconViewGrid::IconViewGrid(QWidget* parent) : QWidget(parent)
+IconViewGrid::IconViewGrid(QWidget* parent) : QWidget(parent)/*{{{*/
 {
     setAttribute(Qt::WA_StaticContents);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -24,21 +24,21 @@ IconViewGrid::IconViewGrid(QWidget* parent) : QWidget(parent)
     image = QImage(16, 16, QImage::Format_ARGB32);
     image.fill(qRgba(0, 0, 0, 0));
 }
-
-QSize IconViewGrid::sizeHint() const
+/*}}}*/
+QSize IconViewGrid::sizeHint() const/*{{{*/
 {
     QSize size = zoom * image.size();
     if (zoom >= 3)
         size += QSize(1, 1);
     return size;
 }
-
-void IconViewGrid::setPenColor(const QColor &newColor)
+/*}}}*/
+void IconViewGrid::setPenColor(const QColor &newColor)/*{{{*/
 {
     curColor = newColor;
 }
-
-void IconViewGrid::setIconImage(const QImage &newImage)
+/*}}}*/
+void IconViewGrid::setIconImage(const QImage &newImage)/*{{{*/
 {
     if (newImage != image)
     {
@@ -47,8 +47,8 @@ void IconViewGrid::setIconImage(const QImage &newImage)
         updateGeometry();
     }
 }
-
-void IconViewGrid::setZoomFactor(int newZoom)
+/*}}}*/
+void IconViewGrid::setZoomFactor(int newZoom)/*{{{*/
 {
     if (newZoom < 1)
         newZoom = 1;
@@ -57,10 +57,11 @@ void IconViewGrid::setZoomFactor(int newZoom)
         zoom = newZoom;
         update();
         updateGeometry();
+        emit zoomed();
     }
 }
-
-void IconViewGrid::paintEvent(QPaintEvent* event)
+/*}}}*/
+void IconViewGrid::paintEvent(QPaintEvent* event)/*{{{*/
 {
     QPainter painter(this);
     if (zoom >= 3)
@@ -88,8 +89,8 @@ void IconViewGrid::paintEvent(QPaintEvent* event)
         }
     }
 }
-
-QRect IconViewGrid::pixelRect(int i, int j) const
+/*}}}*/
+QRect IconViewGrid::pixelRect(int i, int j) const/*{{{*/
 {
     if (zoom >= 3)
     {
@@ -100,8 +101,8 @@ QRect IconViewGrid::pixelRect(int i, int j) const
         return QRect(zoom * i, zoom * j, zoom, zoom);
     }
 }
-
-void IconViewGrid::mousePressEvent(QMouseEvent* event)
+/*}}}*/
+void IconViewGrid::mousePressEvent(QMouseEvent* event)/*{{{*/
 {
     if (event->button() == Qt::LeftButton)
     {
@@ -112,8 +113,8 @@ void IconViewGrid::mousePressEvent(QMouseEvent* event)
         setImagePixel(event->pos(), false);
     }
 }
-
-void IconViewGrid::mouseMoveEvent(QMouseEvent* event)
+/*}}}*/
+void IconViewGrid::mouseMoveEvent(QMouseEvent* event)/*{{{*/
 {
     if (event->buttons() & Qt::LeftButton)
     {
@@ -124,8 +125,8 @@ void IconViewGrid::mouseMoveEvent(QMouseEvent* event)
         setImagePixel(event->pos(), false);
     }
 }
-
-void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)
+/*}}}*/
+void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)/*{{{*/
 {
     int i = pos.x() / zoom;
     int j = pos.y() / zoom;
@@ -140,5 +141,5 @@ void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)
         emit modified();
     }
 }
-
+/*}}}*/
 

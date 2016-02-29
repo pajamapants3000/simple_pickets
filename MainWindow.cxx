@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 02/26/2016
+ * Updated: 02/29/2016
  * TODO: Organize functions, slots, etc.
  */
 
@@ -15,12 +15,13 @@
 #include <QMessageBox>
 
 #include "MainWindow.hxx"
+#include "SizeDialog.hxx"
+
 
 MainWindow::MainWindow()/*{{{*/
 {
 
     editor = new Editor();
-    editor->setAttribute(Qt::WA_DeleteOnClose, true);
     setCentralWidget(editor);
 
     createActions();
@@ -145,10 +146,10 @@ void MainWindow::iconModified()/*{{{*/
 }/*}}}*/
 void MainWindow::newFile()/*{{{*/
 {
-    if (okToContinue())
+    if (okToContinue() && getDimensions())
     {
         curFile = QString();
-        QImage* image = new QImage(16, 16, QImage::Format_ARGB32);
+        QImage* image = new QImage(dimensions, QImage::Format_ARGB32);
         image->fill(qRgba(0, 0, 0, 0));
         editor->scroller->iconViewGrid->setIconImage(*image);
         setWindowModified(false);
@@ -241,7 +242,12 @@ void MainWindow::close()/*{{{*/
         QMainWindow::close();
 }
 /*}}}*/
-
+bool MainWindow::getDimensions()/*{{{*/
+{
+    SizeDialog dialog(dimensions);
+    return dialog.exec();
+}
+/*}}}*/
 /* Keep this for now because this tactic may come in handy{{{
 bool MainWindow::event(QEvent* event)
 {

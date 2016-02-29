@@ -33,6 +33,7 @@ private slots:
     void iconModified();
     void close();
     void escapeSlot();
+    bool getDimensions();
 
 private:
     void createActions();
@@ -61,5 +62,6 @@ private:
     Editor* editor;
     QString curFile;
     EscapeFilter* escapeFilter;
+    QSize dimensions;
 };
 
