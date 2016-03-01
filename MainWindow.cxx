@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 02/29/2016
+ * Updated: 03/01/2016
  * TODO: Organize functions, slots, etc.
  */
 
@@ -31,8 +31,13 @@ MainWindow::MainWindow()/*{{{*/
     setWindowTitle(QString("[untitled][*] | Simple Pickets"));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(editor->scroller->iconViewGrid, SIGNAL(modified()),
+    connect(editor->scroller->iconViewGrid,
+            SIGNAL(modified(const QPoint&, const QColor&, const QColor&)),
             this, SLOT(iconModified()));
+    connect(editor, SIGNAL(undoAvailable(bool)),
+            undoAction, SLOT(setEnabled(bool)));
+    connect(editor, SIGNAL(redoAvailable(bool)),
+            redoAction, SLOT(setEnabled(bool)));
 
     filterEscape();
 }
@@ -91,12 +96,14 @@ void MainWindow::createActions()/*{{{*/
     undoAction->setIcon(QIcon(":/images/undo.png"));
     undoAction->setShortcut(QKeySequence::Undo);
     undoAction->setStatusTip(tr("Undo last change"));
+    undoAction->setEnabled(false);
     connect(undoAction, SIGNAL(triggered()), this, SLOT(undo()));
 
     redoAction = new QAction(tr("&Redo"), this);
     redoAction->setIcon(QIcon(":/images/redo.png"));
     redoAction->setShortcut(QKeySequence::Redo);
     redoAction->setStatusTip(tr("Redo last undo"));
+    redoAction->setEnabled(false);
     connect(redoAction, SIGNAL(triggered()), this, SLOT(redo()));
 
     toggleGridAction = new QAction(tr("&ToggleGrid"), this);

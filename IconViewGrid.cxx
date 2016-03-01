@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT; See LICENSE
  * Created: 02/24/2016
- * Updated: 02/28/2016
+ * Updated: 03/01/2016
  */
 
 #include <QPainter>
@@ -93,53 +93,55 @@ void IconViewGrid::paintEvent(QPaintEvent* event)/*{{{*/
 QRect IconViewGrid::pixelRect(int i, int j) const/*{{{*/
 {
     if (zoom >= 3)
-    {
         return QRect(zoom * i + 1, zoom * j + 1, zoom - 1, zoom - 1);
-    }
     else
-    {
         return QRect(zoom * i, zoom * j, zoom, zoom);
-    }
 }
 /*}}}*/
 void IconViewGrid::mousePressEvent(QMouseEvent* event)/*{{{*/
 {
+    emit mousePressed();
     if (event->button() == Qt::LeftButton)
-    {
         setImagePixel(event->pos(), true);
-    }
     else if (event->button() == Qt::RightButton)
-    {
         setImagePixel(event->pos(), false);
-    }
+}
+/*}}}*/
+void IconViewGrid::mouseReleaseEvent(QMouseEvent* event)/*{{{*/
+{
+    emit mouseReleased();
+    QWidget::mouseReleaseEvent(event);
 }
 /*}}}*/
 void IconViewGrid::mouseMoveEvent(QMouseEvent* event)/*{{{*/
 {
     if (event->buttons() & Qt::LeftButton)
-    {
         setImagePixel(event->pos(), true);
-    }
     else if (event->buttons() & Qt::RightButton)
-    {
         setImagePixel(event->pos(), false);
-    }
 }
 /*}}}*/
-void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)/*{{{*/
+void IconViewGrid::setImagePixel(const QPoint &pos, const QColor& color)/*{{{*/
 {
     int i = pos.x() / zoom;
     int j = pos.y() / zoom;
 
     if (image.rect().contains(i, j))
     {
-        if (opaque)
-            image.setPixel(i, j, penColor().rgba());
-        else
-            image.setPixel(i, j, qRgba(0, 0, 0, 0));
+        QColor before, after;
+        before = QColor::fromRgba(iconImage().pixel(i, j));
+        after = color;
+        image.setPixel(i, j, after.rgba());
         update(pixelRect(i, j));
-        emit modified();
+
+        if (before != after)
+            emit modified(pos, before, after);
     }
 }
 /*}}}*/
-
+void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)/*{{{*/
+{
+    QColor color = opaque ? penColor() : QColor(0, 0, 0, 0);
+    setImagePixel(pos, color);
+}
+/*}}}*/

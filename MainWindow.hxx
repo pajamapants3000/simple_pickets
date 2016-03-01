@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 02/26/2016
+ * Updated: 03/01/2016
  */
 
 #include <QMainWindow>
@@ -25,8 +25,8 @@ private slots:
     bool openFile();
     bool saveFile();
     bool saveasFile();
-    void undo() {}
-    void redo() {}
+    void undo() { editor->undoEdit(); }
+    void redo() { editor->redoEdit(); }
     void toggleGrid() {}
     void about() {}
     bool modified();

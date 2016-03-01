@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT - See LICENSE
  * Created: 02/24/2016
- * Updated: 02/28/2016
+ * Updated: 03/01/2016
  */
 
 #ifndef ICONVIEWGRID_HXX
@@ -29,10 +29,14 @@ public:
     int zoomFactor() const { return zoom; }
     QImage iconImage() const { return image; }
     QSize sizeHint() const;
+    void setImagePixel(const QPoint &pos, bool opaque);
+    void setImagePixel(const QPoint &pos, const QColor& color);
 
 signals:
-    void modified();
+    void modified(const QPoint& pos, const QColor& before, const QColor& after);
     void zoomed();
+    void mousePressed();
+    void mouseReleased();
 
 public slots:
     void setPenColor(const QColor &newColor);
@@ -41,11 +45,11 @@ public slots:
 
 protected:
     void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void paintEvent(QPaintEvent* event);
 
 private:
-    void setImagePixel(const QPoint &pos, bool opaque);
     QRect pixelRect(int i, int j) const;
 
     QColor curColor;
