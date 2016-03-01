@@ -23,6 +23,11 @@ IconViewGrid::IconViewGrid(QWidget* parent) : QWidget(parent)/*{{{*/
 
     image = QImage(16, 16, QImage::Format_ARGB32);
     image.fill(qRgba(0, 0, 0, 0));
+
+    curShape.push_back(QPoint(1, 0));
+    curShape.push_back(QPoint(-1, 0));
+    curShape.push_back(QPoint(0, 1));
+    curShape.push_back(QPoint(0, -1));
 }
 /*}}}*/
 QSize IconViewGrid::sizeHint() const/*{{{*/
@@ -102,9 +107,9 @@ void IconViewGrid::mousePressEvent(QMouseEvent* event)/*{{{*/
 {
     emit mousePressed();
     if (event->button() == Qt::LeftButton)
-        setImagePixel(event->pos(), true);
+        draw(event->pos(), true);
     else if (event->button() == Qt::RightButton)
-        setImagePixel(event->pos(), false);
+        draw(event->pos(), false);
 }
 /*}}}*/
 void IconViewGrid::mouseReleaseEvent(QMouseEvent* event)/*{{{*/
@@ -116,9 +121,9 @@ void IconViewGrid::mouseReleaseEvent(QMouseEvent* event)/*{{{*/
 void IconViewGrid::mouseMoveEvent(QMouseEvent* event)/*{{{*/
 {
     if (event->buttons() & Qt::LeftButton)
-        setImagePixel(event->pos(), true);
+        draw(event->pos(), true);
     else if (event->buttons() & Qt::RightButton)
-        setImagePixel(event->pos(), false);
+        draw(event->pos(), false);
 }
 /*}}}*/
 void IconViewGrid::setImagePixel(const QPoint &pos, const QColor& color)/*{{{*/
@@ -139,9 +144,30 @@ void IconViewGrid::setImagePixel(const QPoint &pos, const QColor& color)/*{{{*/
     }
 }
 /*}}}*/
-void IconViewGrid::setImagePixel(const QPoint &pos, bool opaque)/*{{{*/
+void IconViewGrid::setBrushShape(const QList<QPoint>& newShape)/*{{{*/
+{
+    curShape = newShape;
+}
+/*}}}*/
+void IconViewGrid::draw(const QPoint& pos, const QColor& color,/*{{{*/
+            QList<QPoint> shape)
+{
+    if (shape.empty())
+        shape = curShape;
+    QList<QPoint>::ConstIterator citer = shape.constBegin();
+    do
+    {
+        QPoint absolutePos = pos + (zoom * *citer);
+        setImagePixel(absolutePos, color);
+    } while (++citer != shape.constEnd());
+    // remove updates from setImagePixel and just do here?
+
+}
+/*}}}*/
+void IconViewGrid::draw(const QPoint& pos, const bool opaque,/*{{{*/
+            QList<QPoint> shape)
 {
     QColor color = opaque ? penColor() : QColor(0, 0, 0, 0);
-    setImagePixel(pos, color);
+    draw(pos, color, shape);
 }
 /*}}}*/

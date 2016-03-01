@@ -43,6 +43,7 @@ Editor::Editor(QWidget* parent, Qt::WindowFlags f)/*{{{*/
     connect(scroller->iconViewGrid,
             SIGNAL(modified(const QPoint&, const QColor&, const QColor&)),
             this, SLOT(newMod(const QPoint&, const QColor&, const QColor&)));
+
 /*}}}*/
     setters = new ARGBSetterWidget();/*{{{*/
     connect(setters, SIGNAL(colourChanged(const QColor&)),
@@ -104,10 +105,7 @@ void Editor::newMod(const QPoint& pos,/*{{{*/
 {
     if (recording)
     {
-        struct mod new_mod;
-        new_mod.pos = pos;
-        new_mod.before = before;
-        new_mod.after = after;
+        struct mod new_mod = {pos, before, after};
         curEdit->push_back(new_mod);
     }
 }
@@ -137,8 +135,7 @@ void Editor::undoEdit()/*{{{*/
         --historyIndex;
         QList<struct mod>::ConstIterator citer =
                 (*historyIndex).constBegin();
-        do scroller->iconViewGrid->setImagePixel((*citer).pos,
-                (*citer).before);
+        do scroller->iconViewGrid->draw((*citer).pos, (*citer).before);
         while (++citer != (*historyIndex).constEnd());
         emit redoAvailable(true);
     }
@@ -152,8 +149,7 @@ void Editor::redoEdit()/*{{{*/
     {
         QList<struct mod>::ConstIterator citer =
                 (*historyIndex).constBegin();
-        do scroller->iconViewGrid->setImagePixel((*citer).pos,
-                (*citer).after);
+        do scroller->iconViewGrid->draw((*citer).pos, (*citer).after);
         while (++citer != (*historyIndex).constEnd());
         ++historyIndex;
         emit undoAvailable(true);

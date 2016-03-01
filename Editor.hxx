@@ -35,18 +35,29 @@ public:
     void undoEdit();
     void redoEdit();
 
+    // I don't know if I still want these/*{{{*/
+    const struct mod& genModCircle(const QPoint& pos, int radius);
+    const struct mod& genModRing(const QPoint& pos, int radius);
+    const struct mod& genModSquare(const QPoint& pos, int length);
+    const struct mod& genModRectangle(const QPoint& pos,int width,int height);
+    const struct mod& genModLine(const QPoint& pos, int length);
+/*}}}*/
 private:
     struct mod
     {
-        QPoint pos;
-        QColor before;
-        QColor after;
+        const QPoint pos;
+        const QColor before;
+        const QColor after;
     };
     typedef QList<struct mod> edit;
     edit* curEdit;
     QList<edit> history;
     QList<edit>::Iterator historyIndex = history.begin();
     bool recording = false;
+
+    const QColor _black = {0, 0, 0};
+    const QColor _white = {255, 255, 255};
+    const QPoint _origin = {0, 0};
 
 private slots:
     void newMod(const QPoint& pos, const QColor& before, const QColor& after);
