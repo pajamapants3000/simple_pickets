@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT; See LICENSE
  * Created: 02/24/2016
- * Updated: 03/01/2016
+ * Updated: 03/02/2016
  */
 
 #include <QPainter>
@@ -24,16 +24,12 @@ IconViewGrid::IconViewGrid(QWidget* parent) : QWidget(parent)/*{{{*/
     image = QImage(16, 16, QImage::Format_ARGB32);
     image.fill(qRgba(0, 0, 0, 0));
 
-    curShape.push_back(QPoint(1, 0));
-    curShape.push_back(QPoint(-1, 0));
-    curShape.push_back(QPoint(0, 1));
-    curShape.push_back(QPoint(0, -1));
 }
 /*}}}*/
 QSize IconViewGrid::sizeHint() const/*{{{*/
 {
     QSize size = zoom * image.size();
-    if (zoom >= 3)
+    if (gridOn && zoom >= 3)
         size += QSize(1, 1);
     return size;
 }
@@ -69,7 +65,7 @@ void IconViewGrid::setZoomFactor(int newZoom)/*{{{*/
 void IconViewGrid::paintEvent(QPaintEvent* event)/*{{{*/
 {
     QPainter painter(this);
-    if (zoom >= 3)
+    if (gridOn && zoom >= 3)
     {
         painter.setPen(palette().foreground().color());
         for (int i = 0; i <= image.width(); ++i)
@@ -97,7 +93,7 @@ void IconViewGrid::paintEvent(QPaintEvent* event)/*{{{*/
 /*}}}*/
 QRect IconViewGrid::pixelRect(int i, int j) const/*{{{*/
 {
-    if (zoom >= 3)
+    if (gridOn && zoom >= 3)
         return QRect(zoom * i + 1, zoom * j + 1, zoom - 1, zoom - 1);
     else
         return QRect(zoom * i, zoom * j, zoom, zoom);
@@ -144,30 +140,40 @@ void IconViewGrid::setImagePixel(const QPoint &pos, const QColor& color)/*{{{*/
     }
 }
 /*}}}*/
-void IconViewGrid::setBrushShape(const QList<QPoint>& newShape)/*{{{*/
+void IconViewGrid::setBrushShape(const shape_t& newShape)/*{{{*/
 {
-    curShape = newShape;
+    curShape = &newShape;
 }
 /*}}}*/
 void IconViewGrid::draw(const QPoint& pos, const QColor& color,/*{{{*/
-            QList<QPoint> shape)
+            const shape_t* shape)
 {
-    if (shape.empty())
+    if (shape->empty())
+    {
+        delete shape;
         shape = curShape;
-    QList<QPoint>::ConstIterator citer = shape.constBegin();
+    }
+    shape_t::ConstIterator citer = shape->constBegin();
     do
     {
         QPoint absolutePos = pos + (zoom * *citer);
         setImagePixel(absolutePos, color);
-    } while (++citer != shape.constEnd());
+    } while (++citer != shape->constEnd());
     // remove updates from setImagePixel and just do here?
 
 }
 /*}}}*/
 void IconViewGrid::draw(const QPoint& pos, const bool opaque,/*{{{*/
-            QList<QPoint> shape)
+            const shape_t* shape)
 {
     QColor color = opaque ? penColor() : QColor(0, 0, 0, 0);
     draw(pos, color, shape);
+}
+/*}}}*/
+void IconViewGrid::toggleGrid()/*{{{*/
+{
+    gridOn = ! gridOn;
+    update();
+    updateGeometry();
 }
 /*}}}*/

@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/01/2016
+ * Updated: 03/02/2016
  */
 
 #include <QLabel>

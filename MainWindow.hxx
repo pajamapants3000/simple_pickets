@@ -5,10 +5,11 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 03/01/2016
+ * Updated: 03/02/2016
  */
 
 #include <QMainWindow>
+#include <QCloseEvent>
 
 #include "Editor.hxx"
 #include "EscapeFilter.hxx"
@@ -27,13 +28,14 @@ private slots:
     bool saveasFile();
     void undo() { editor->undoEdit(); }
     void redo() { editor->redoEdit(); }
-    void toggleGrid() {}
     void about() {}
     bool modified();
     void iconModified();
-    void close();
     void escapeSlot();
     bool getDimensions();
+
+protected:
+    void closeEvent(QCloseEvent* event);
 
 private:
     void createActions();

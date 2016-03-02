@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/01/2016
+ * Updated: 03/02/2016
  */
 
 #ifndef EDITOR_HXX
@@ -35,13 +35,6 @@ public:
     void undoEdit();
     void redoEdit();
 
-    // I don't know if I still want these/*{{{*/
-    const struct mod& genModCircle(const QPoint& pos, int radius);
-    const struct mod& genModRing(const QPoint& pos, int radius);
-    const struct mod& genModSquare(const QPoint& pos, int length);
-    const struct mod& genModRectangle(const QPoint& pos,int width,int height);
-    const struct mod& genModLine(const QPoint& pos, int length);
-/*}}}*/
 private:
     struct mod
     {
@@ -58,6 +51,11 @@ private:
     const QColor _black = {0, 0, 0};
     const QColor _white = {255, 255, 255};
     const QPoint _origin = {0, 0};
+    const shape_t* genModCircle(int radius);
+    const shape_t* genModRing(int radius);
+    const shape_t* genModSquare(int length);
+    const shape_t* genModRectangle(int width,int height);
+    const shape_t* genModLine(int length);
 
 private slots:
     void newMod(const QPoint& pos, const QColor& before, const QColor& after);

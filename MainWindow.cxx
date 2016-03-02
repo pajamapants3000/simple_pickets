@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 03/01/2016
+ * Updated: 03/02/2016
  * TODO: Organize functions, slots, etc.
  */
 
@@ -109,7 +109,8 @@ void MainWindow::createActions()/*{{{*/
     toggleGridAction = new QAction(tr("&ToggleGrid"), this);
     toggleGridAction->setShortcut(tr("Ctrl+T"));
     toggleGridAction->setStatusTip(tr("Toggle gridlines"));
-    connect(toggleGridAction, SIGNAL(triggered()), this, SLOT(toggleGrid()));
+    connect(toggleGridAction, SIGNAL(triggered()),
+            editor->scroller->iconViewGrid, SLOT(toggleGrid()));
 
     aboutAction = new QAction(tr("&About"), this);
     aboutAction->setIcon(QIcon(":/images/about.png"));
@@ -243,29 +244,15 @@ bool MainWindow::okToContinue()/*{{{*/
     return true;
 }
 /*}}}*/
-void MainWindow::close()/*{{{*/
-{
-    if (okToContinue())
-        QMainWindow::close();
-}
-/*}}}*/
 bool MainWindow::getDimensions()/*{{{*/
 {
     SizeDialog dialog(dimensions);
     return dialog.exec();
 }
 /*}}}*/
-/* Keep this for now because this tactic may come in handy{{{
-bool MainWindow::event(QEvent* event)
+void MainWindow::closeEvent(QCloseEvent* event)/*{{{*/
 {
-    // if editor area was closed (by pressing ESC)
-    if (event->type() == QEvent::ChildRemoved && editor->isHidden())
-    {
-        close();                                // close everything
-        return true;
-    }
-    else
-        return QWidget::event(event);
+    if (!okToContinue())
+        event->ignore();
 }
-}}}*/
-
+/*}}}*/
