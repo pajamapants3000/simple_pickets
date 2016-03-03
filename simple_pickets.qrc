@@ -10,5 +10,9 @@
     <file>images/about.png</file>
     <file>images/plus.png</file>
     <file>images/minus.png</file>
+    <file>images/ellipse.png</file>
+    <file>images/ring.png</file>
+    <file>images/rectangle.png</file>
+    <file>images/block.png</file>
 </qresource>
 </RCC>

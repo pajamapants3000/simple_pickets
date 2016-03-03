@@ -37,7 +37,7 @@ Zoomer::Zoomer(QWidget* parent) : QWidget(parent)/*{{{*/
     connect(minus, SIGNAL(clicked()), this, SLOT(zoomOut()));
     connect(plus, SIGNAL(clicked()), this, SLOT(zoomIn()));
     connect(indicator, SIGNAL(returnPressed()),
-            this, SLOT(editZoom()));
+            this, SLOT(setZoom()));
 
     QHBoxLayout* layout = new QHBoxLayout;
     layout->addWidget(minus);
@@ -61,6 +61,11 @@ void Zoomer::setZoom(int newZoomLevel)/*{{{*/
     emit zooming(_zoom);
 }
 /*}}}*/
+void Zoomer::setZoom()/*{{{*/
+{
+    setZoom(indicator->text());
+}
+/*}}}*/
 void Zoomer::zoomIn()/*{{{*/
 {
     setZoom(_zoom + 1);
@@ -74,10 +79,5 @@ void Zoomer::zoomOut()/*{{{*/
 void Zoomer::unzoom()/*{{{*/
 {
     setZoom(defaultZoom);
-}
-/*}}}*/
-void Zoomer::editZoom()/*{{{*/
-{
-    setZoom(indicator->text());
 }
 /*}}}*/

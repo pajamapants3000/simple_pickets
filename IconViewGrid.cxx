@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT; See LICENSE
  * Created: 02/24/2016
- * Updated: 03/02/2016
+ * Updated: 03/03/2016
  */
 
 #include <QPainter>
@@ -140,9 +140,9 @@ void IconViewGrid::setImagePixel(const QPoint &pos, const QColor& color)/*{{{*/
     }
 }
 /*}}}*/
-void IconViewGrid::setBrushShape(const shape_t& newShape)/*{{{*/
+void IconViewGrid::setBrush(const shape_t& newBrush)/*{{{*/
 {
-    curShape = &newShape;
+    curBrush = &newBrush;
 }
 /*}}}*/
 void IconViewGrid::draw(const QPoint& pos, const QColor& color,/*{{{*/
@@ -151,7 +151,7 @@ void IconViewGrid::draw(const QPoint& pos, const QColor& color,/*{{{*/
     if (shape->empty())
     {
         delete shape;
-        shape = curShape;
+        shape = curBrush;
     }
     shape_t::ConstIterator citer = shape->constBegin();
     do

@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/02/2016
+ * Updated: 03/03/2016
  */
 
 #ifndef EDITOR_HXX
@@ -18,7 +18,9 @@
 
 #include "Scroller.hxx"
 #include "ARGBSetterWidget.hxx"
-#include "Zoomer.hxx"
+//#include "Zoomer.hxx"
+
+enum brushShape { Ellipse, Ring, Rectangle, Block };
 
 class Editor : public QDialog
 {
@@ -29,11 +31,11 @@ public:
 
     Scroller* scroller;
     ARGBSetterWidget* setters;
-    Zoomer* zoomer;
     bool writeFile(const QString& fileName);
     bool loadFile(const QString& fileName);
     void undoEdit();
     void redoEdit();
+    enum brushShape shape() const { return curBrushShape; }
 
 private:
     struct mod
@@ -51,20 +53,28 @@ private:
     const QColor _black = {0, 0, 0};
     const QColor _white = {255, 255, 255};
     const QPoint _origin = {0, 0};
-    const shape_t* genModCircle(int radius);
-    const shape_t* genModRing(int radius);
-    const shape_t* genModSquare(int length);
-    const shape_t* genModRectangle(int width,int height);
-    const shape_t* genModLine(int length);
+    const shape_t* genEllipse(int x, int y);
+    const shape_t* genRing(int x, int y);
+    const shape_t* genRectangle(int x, int y);
+    const shape_t* genBlock(int x, int y);
+    enum brushShape curBrushShape;
+    int curBrushX;
+    int curBrushY;
+
+public slots:
+    void setBrushShape(enum brushShape newBrushShape);
+    void setBrushX(int newBrushX);
+    void setBrushY(int newBrushY);
 
 private slots:
     void newMod(const QPoint& pos, const QColor& before, const QColor& after);
     void startEdit();
     void stopEdit();
+    void setBrush(int x, int y, enum brushShape shape = Block);
 
 signals:
-    void redoAvailable(bool available);
-    void undoAvailable(bool available);
+    void redoAvailable(bool available) const;
+    void undoAvailable(bool available) const;
 
 };
 

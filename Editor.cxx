@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/02/2016
+ * Updated: 03/03/2016
  */
 
 #include <QLabel>
@@ -49,24 +49,16 @@ Editor::Editor(QWidget* parent, Qt::WindowFlags f)/*{{{*/
     connect(setters, SIGNAL(colourChanged(const QColor&)),
             scroller->iconViewGrid, SLOT(setPenColor(const QColor&)));
 /*}}}*/
-    // add zoom bar/*{{{*/
-    zoomer = new Zoomer;
-    connect(zoomer, SIGNAL(zooming(int)),
-            scroller->iconViewGrid, SLOT(setZoomFactor(int)));
-    zoomer->setZoom(zoomer->defaultZoom);
-/*}}}*/
     // Add widgets to the layouts/*{{{*/
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* splitLayout = new QHBoxLayout;
     mainLayout->addWidget(heading);
-    mainLayout->addWidget(zoomer);
     mainLayout->addLayout(splitLayout);
     splitLayout->addWidget(scroller);
     splitLayout->addWidget(setters);
 /*}}}*/
     // Apply additional positioning/*{{{*/
     mainLayout->setAlignment(heading, Qt::AlignHCenter);
-    mainLayout->setAlignment(zoomer, Qt::AlignHCenter);
 /*}}}*/
     setLayout(mainLayout);
 
@@ -156,5 +148,87 @@ void Editor::redoEdit()/*{{{*/
     }
     if (historyIndex == history.end())
         emit redoAvailable(false);
+}
+/*}}}*/
+void Editor::setBrush(int x, int y, enum brushShape shape)/*{{{*/
+{
+    const shape_t* result;
+    switch (shape)
+    {
+        case Ellipse:
+            result = genEllipse(x, y);
+            break;
+        case Ring:
+            result = genRing(x, y);
+            break;
+        case Rectangle:
+            result = genRectangle(x, y);
+            break;
+        case Block:
+            result = genBlock(x, y);
+            break;
+        default:
+            result = genBlock(x, y);
+    }
+    scroller->iconViewGrid->setBrush(*result);
+}
+/*}}}*/
+void Editor::setBrushShape(enum brushShape newBrushShape)/*{{{*/
+{
+    curBrushShape = newBrushShape;
+    setBrush(curBrushX, curBrushY, curBrushShape);
+}
+/*}}}*/
+void Editor::setBrushX(int newBrushX)/*{{{*/
+{
+    curBrushX = newBrushX;
+    setBrush(curBrushX, curBrushY, curBrushShape);
+}
+/*}}}*/
+void Editor::setBrushY(int newBrushY)/*{{{*/
+{
+    curBrushY = newBrushY;
+    setBrush(curBrushX, curBrushY, curBrushShape);
+}
+/*}}}*/
+const shape_t* Editor::genEllipse(int x, int y)/*{{{*/
+{
+    shape_t* result = new shape_t;
+    // just for testing - will put in proper shape later
+    result->push_back(QPoint(x, y));
+    result->push_back(QPoint(-x, y));
+    result->push_back(QPoint(x, -y));
+    result->push_back(QPoint(-x, -y));
+    return result;
+}
+/*}}}*/
+const shape_t* Editor::genRing(int x, int y)/*{{{*/
+{
+    shape_t* result = new shape_t;
+    // just for testing - will put in proper shape later
+    result->push_back(QPoint(x, y));
+    result->push_back(QPoint(x, -y));
+    result->push_back(QPoint(-x, -y));
+    return result;
+}
+/*}}}*/
+const shape_t* Editor::genRectangle(int x, int y)/*{{{*/
+{
+    shape_t* result = new shape_t;
+    // just for testing - will put in proper shape later
+    result->push_back(QPoint(x, y));
+    result->push_back(QPoint(-x, y));
+    result->push_back(QPoint(-x, -y));
+    return result;
+}
+/*}}}*/
+const shape_t* Editor::genBlock(int x, int y)/*{{{*/
+{
+    shape_t* result = new shape_t;
+    // just for testing - will put in proper shape later
+    result->push_back(QPoint(x, y));
+    result->push_back(QPoint(-x, y));
+    result->push_back(QPoint(x, -y));
+    return result;
 }
 /*}}}*/

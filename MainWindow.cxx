@@ -5,17 +5,17 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 03/02/2016
+ * Updated: 03/03/2016
  * TODO: Organize functions, slots, etc.
  */
 
-#include <QAction>
-#include <QMenuBar>
-#include <QFileDialog>
 #include <QMessageBox>
 
 #include "MainWindow.hxx"
 #include "SizeDialog.hxx"
+#include "BrushSizer.hxx"
+#include "Zoomer.hxx"
+
 
 
 MainWindow::MainWindow()/*{{{*/
@@ -26,6 +26,7 @@ MainWindow::MainWindow()/*{{{*/
 
     createActions();
     createMenus();
+    createToolBars();
 
     setWindowIcon(QIcon(":/images/main.png"));
     setWindowTitle(QString("[untitled][*] | Simple Pickets"));
@@ -62,6 +63,7 @@ void MainWindow::escapeSlot()/*{{{*/
 /*}}}*/
 void MainWindow::createActions()/*{{{*/
 {
+    // menu actions/*{{{*/
     newFileAction = new QAction(tr("&New"), this);
     newFileAction->setIcon(QIcon(":/images/newFile.png"));
     newFileAction->setShortcut(QKeySequence::New);
@@ -116,6 +118,32 @@ void MainWindow::createActions()/*{{{*/
     aboutAction->setIcon(QIcon(":/images/about.png"));
     aboutAction->setStatusTip(tr("About this program"));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+/*}}}*/
+    // toolbar actions/*{{{*/
+    ellipseBrushAction = new QAction(tr("&EllipseBrush"), this);
+    ellipseBrushAction->setIcon(QIcon(":/images/ellipse.png"));
+    ellipseBrushAction->setStatusTip(tr("Use filled-in ellipse brush"));
+    connect(ellipseBrushAction, SIGNAL(triggered()),
+            this, SLOT(ellipseBrush()));
+
+    ringBrushAction = new QAction(tr("&RingBrush"), this);
+    ringBrushAction->setIcon(QIcon(":/images/ring.png"));
+    ringBrushAction->setStatusTip(tr("Use ring brush"));
+    connect(ringBrushAction, SIGNAL(triggered()),
+            this, SLOT(ringBrush()));
+
+    rectangleBrushAction = new QAction(tr("&RectangleBrush"), this);
+    rectangleBrushAction->setIcon(QIcon(":/images/rectangle.png"));
+    rectangleBrushAction->setStatusTip(tr("Use rectangle brush"));
+    connect(rectangleBrushAction, SIGNAL(triggered()),
+            this, SLOT(rectangleBrush()));
+
+    blockBrushAction = new QAction(tr("&BlockBrush"), this);
+    blockBrushAction->setIcon(QIcon(":/images/block.png"));
+    blockBrushAction->setStatusTip(tr("Use block brush"));
+    connect(blockBrushAction, SIGNAL(triggered()),
+            this, SLOT(blockBrush()));
+/*}}}*/
 
 }
 /*}}}*/
@@ -140,6 +168,36 @@ void MainWindow::createMenus()/*{{{*/
     menuBar()->addSeparator();
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAction);
+
+}
+/*}}}*/
+void MainWindow::createToolBars()/*{{{*/
+{
+    toolBar = addToolBar(tr("ToolBar"));
+
+    BrushSizer* brushSizer = new BrushSizer;
+    connect(brushSizer, SIGNAL(brushXChanged(int)),
+            editor, SLOT(setBrushX(int)));
+    connect(brushSizer, SIGNAL(brushYChanged(int)),
+            editor, SLOT(setBrushY(int)));
+    brushSizer->setBrushX(0);
+    brushSizer->setBrushY(0);
+    editor->setBrushX(0);
+    editor->setBrushY(0);
+
+    Zoomer* zoomer = new Zoomer;
+    connect(zoomer, SIGNAL(zooming(int)),
+            editor->scroller->iconViewGrid, SLOT(setZoomFactor(int)));
+    zoomer->setZoom(zoomer->defaultZoom);
+
+    toolBar->addAction(ellipseBrushAction);
+    toolBar->addAction(ringBrushAction);
+    toolBar->addAction(rectangleBrushAction);
+    toolBar->addAction(blockBrushAction);
+    toolBar->addSeparator();
+    toolBar->addWidget(brushSizer);
+    toolBar->addSeparator();
+    toolBar->addWidget(zoomer);
 
 }
 /*}}}*/
@@ -254,5 +312,25 @@ void MainWindow::closeEvent(QCloseEvent* event)/*{{{*/
 {
     if (!okToContinue())
         event->ignore();
+}
+/*}}}*/
+void MainWindow::ellipseBrush()/*{{{*/
+{
+    editor->setBrushShape(Ellipse);
+}
+/*}}}*/
+void MainWindow::ringBrush()/*{{{*/
+{
+    editor->setBrushShape(Ring);
+}
+/*}}}*/
+void MainWindow::blockBrush()/*{{{*/
+{
+    editor->setBrushShape(Block);
+}
+/*}}}*/
+void MainWindow::rectangleBrush()/*{{{*/
+{
+    editor->setBrushShape(Rectangle);
 }
 /*}}}*/

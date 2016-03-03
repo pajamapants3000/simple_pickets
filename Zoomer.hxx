@@ -31,7 +31,7 @@ signals:
 public slots:
     void setZoom(int newZoomLevel);
     void setZoom(const QString& newZoomText);
-    void editZoom();
+    void setZoom();
 
 private slots:
     void zoomIn();
