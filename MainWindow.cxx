@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 03/03/2016
+ * Updated: 03/04/2016
  * TODO: Organize functions, slots, etc.
  */
 
@@ -94,6 +94,12 @@ void MainWindow::createActions()/*{{{*/
     exitAction->setStatusTip(tr("Exit the program"));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
+    clearAction = new QAction(tr("C&lear"), this);
+    clearAction->setIcon(QIcon(":/images/clear.png"));
+    clearAction->setShortcut(tr("Ctrl+L"));
+    clearAction->setStatusTip(tr("Clear the image"));
+    connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
+
     undoAction = new QAction(tr("&Undo"), this);
     undoAction->setIcon(QIcon(":/images/undo.png"));
     undoAction->setShortcut(QKeySequence::Undo);
@@ -124,25 +130,25 @@ void MainWindow::createActions()/*{{{*/
     ellipseBrushAction->setIcon(QIcon(":/images/ellipse.png"));
     ellipseBrushAction->setStatusTip(tr("Use filled-in ellipse brush"));
     connect(ellipseBrushAction, SIGNAL(triggered()),
-            this, SLOT(ellipseBrush()));
+            editor->scroller->iconViewGrid->brush(), SLOT(ellipseBrush()));
 
     ringBrushAction = new QAction(tr("&RingBrush"), this);
     ringBrushAction->setIcon(QIcon(":/images/ring.png"));
     ringBrushAction->setStatusTip(tr("Use ring brush"));
     connect(ringBrushAction, SIGNAL(triggered()),
-            this, SLOT(ringBrush()));
+            editor->scroller->iconViewGrid->brush(), SLOT(ringBrush()));
 
     rectangleBrushAction = new QAction(tr("&RectangleBrush"), this);
     rectangleBrushAction->setIcon(QIcon(":/images/rectangle.png"));
     rectangleBrushAction->setStatusTip(tr("Use rectangle brush"));
     connect(rectangleBrushAction, SIGNAL(triggered()),
-            this, SLOT(rectangleBrush()));
+            editor->scroller->iconViewGrid->brush(), SLOT(rectangleBrush()));
 
     blockBrushAction = new QAction(tr("&BlockBrush"), this);
     blockBrushAction->setIcon(QIcon(":/images/block.png"));
     blockBrushAction->setStatusTip(tr("Use block brush"));
     connect(blockBrushAction, SIGNAL(triggered()),
-            this, SLOT(blockBrush()));
+            editor->scroller->iconViewGrid->brush(), SLOT(blockBrush()));
 /*}}}*/
 
 }
@@ -158,6 +164,8 @@ void MainWindow::createMenus()/*{{{*/
     fileMenu->addAction(exitAction);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu->addAction(clearAction);
+    editMenu->addSeparator();
     editMenu->addAction(undoAction);
     editMenu->addAction(redoAction);
 
@@ -177,13 +185,13 @@ void MainWindow::createToolBars()/*{{{*/
 
     BrushSizer* brushSizer = new BrushSizer;
     connect(brushSizer, SIGNAL(brushXChanged(int)),
-            editor, SLOT(setBrushX(int)));
+            editor->scroller->iconViewGrid->brush(), SLOT(setBrushX(int)));
     connect(brushSizer, SIGNAL(brushYChanged(int)),
-            editor, SLOT(setBrushY(int)));
+            editor->scroller->iconViewGrid->brush(), SLOT(setBrushY(int)));
     brushSizer->setBrushX(0);
     brushSizer->setBrushY(0);
-    editor->setBrushX(0);
-    editor->setBrushY(0);
+    editor->scroller->iconViewGrid->brush()->setBrushX(0);
+    editor->scroller->iconViewGrid->brush()->setBrushY(0);
 
     Zoomer* zoomer = new Zoomer;
     connect(zoomer, SIGNAL(zooming(int)),
@@ -210,6 +218,13 @@ void MainWindow::iconModified()/*{{{*/
 {
     setWindowModified(true);
 }/*}}}*/
+void MainWindow::clear()/*{{{*/
+{
+    QImage* image = new QImage(dimensions, QImage::Format_ARGB32);
+    image->fill(qRgba(0, 0, 0, 0));
+    editor->scroller->iconViewGrid->setIconImage(*image);
+}
+/*}}}*/
 void MainWindow::newFile()/*{{{*/
 {
     if (okToContinue() && getDimensions())
@@ -312,25 +327,5 @@ void MainWindow::closeEvent(QCloseEvent* event)/*{{{*/
 {
     if (!okToContinue())
         event->ignore();
-}
-/*}}}*/
-void MainWindow::ellipseBrush()/*{{{*/
-{
-    editor->setBrushShape(Ellipse);
-}
-/*}}}*/
-void MainWindow::ringBrush()/*{{{*/
-{
-    editor->setBrushShape(Ring);
-}
-/*}}}*/
-void MainWindow::blockBrush()/*{{{*/
-{
-    editor->setBrushShape(Block);
-}
-/*}}}*/
-void MainWindow::rectangleBrush()/*{{{*/
-{
-    editor->setBrushShape(Rectangle);
 }
 /*}}}*/

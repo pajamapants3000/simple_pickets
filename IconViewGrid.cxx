@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT; See LICENSE
  * Created: 02/24/2016
- * Updated: 03/03/2016
+ * Updated: 03/04/2016
  */
 
 #include <QPainter>
@@ -20,6 +20,8 @@ IconViewGrid::IconViewGrid(QWidget* parent) : QWidget(parent)/*{{{*/
 
     curColor = Qt::black;
     zoom = 8;
+
+    curBrush = new Brush(simplePen);
 
     image = QImage(16, 16, QImage::Format_ARGB32);
     image.fill(qRgba(0, 0, 0, 0));
@@ -140,34 +142,31 @@ void IconViewGrid::setImagePixel(const QPoint &pos, const QColor& color)/*{{{*/
     }
 }
 /*}}}*/
-void IconViewGrid::setBrush(const shape_t& newBrush)/*{{{*/
+void IconViewGrid::setBrush(Brush& newBrush)/*{{{*/
 {
     curBrush = &newBrush;
 }
 /*}}}*/
 void IconViewGrid::draw(const QPoint& pos, const QColor& color,/*{{{*/
-            const shape_t* shape)
+            const Brush* _brush)
 {
-    if (shape->empty())
-    {
-        delete shape;
-        shape = curBrush;
-    }
-    shape_t::ConstIterator citer = shape->constBegin();
+    if (!_brush)
+        _brush = curBrush;
+    shape_t::ConstIterator citer = _brush->brushShape().constBegin();
     do
     {
         QPoint absolutePos = pos + (zoom * *citer);
         setImagePixel(absolutePos, color);
-    } while (++citer != shape->constEnd());
+    } while (++citer != _brush->brushShape().constEnd());
     // remove updates from setImagePixel and just do here?
 
 }
 /*}}}*/
 void IconViewGrid::draw(const QPoint& pos, const bool opaque,/*{{{*/
-            const shape_t* shape)
+            const Brush* _brush)
 {
     QColor color = opaque ? penColor() : QColor(0, 0, 0, 0);
-    draw(pos, color, shape);
+    draw(pos, color, _brush);
 }
 /*}}}*/
 void IconViewGrid::toggleGrid()/*{{{*/
@@ -175,5 +174,10 @@ void IconViewGrid::toggleGrid()/*{{{*/
     gridOn = ! gridOn;
     update();
     updateGeometry();
+}
+/*}}}*/
+void IconViewGrid::usePen()/*{{{*/
+{
+    curBrush = new Brush(simplePen);
 }
 /*}}}*/

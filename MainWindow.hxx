@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 03/03/2016
+ * Updated: 03/04/2016
  */
 
 #include <QMainWindow>
@@ -30,6 +30,7 @@ private slots:
     bool openFile();
     bool saveFile();
     bool saveasFile();
+    void clear();
     void undo() { editor->undoEdit(); }
     void redo() { editor->redoEdit(); }
     void about() {}
@@ -37,10 +38,6 @@ private slots:
     void iconModified();
     void escapeSlot();
     bool getDimensions();
-    void ellipseBrush();
-    void ringBrush();
-    void rectangleBrush();
-    void blockBrush();
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -66,6 +63,7 @@ private:
     QAction* saveasFileAction;
     QAction* exitAction;
 
+    QAction* clearAction;
     QAction* undoAction;
     QAction* redoAction;
 
@@ -82,6 +80,6 @@ private:
     Editor* editor;
     QString curFile;
     EscapeFilter* escapeFilter;
-    QSize dimensions;
+    QSize dimensions = QSize(16, 16);
 };
 

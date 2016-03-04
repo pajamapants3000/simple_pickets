@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/03/2016
+ * Updated: 03/04/2016
  */
 
 #ifndef EDITOR_HXX
@@ -15,12 +15,8 @@
 #include <QDialog>
 #include <QList>
 
-
 #include "Scroller.hxx"
 #include "ARGBSetterWidget.hxx"
-//#include "Zoomer.hxx"
-
-enum brushShape { Ellipse, Ring, Rectangle, Block };
 
 class Editor : public QDialog
 {
@@ -35,7 +31,6 @@ public:
     bool loadFile(const QString& fileName);
     void undoEdit();
     void redoEdit();
-    enum brushShape shape() const { return curBrushShape; }
 
 private:
     struct mod
@@ -53,24 +48,11 @@ private:
     const QColor _black = {0, 0, 0};
     const QColor _white = {255, 255, 255};
     const QPoint _origin = {0, 0};
-    const shape_t* genEllipse(int x, int y);
-    const shape_t* genRing(int x, int y);
-    const shape_t* genRectangle(int x, int y);
-    const shape_t* genBlock(int x, int y);
-    enum brushShape curBrushShape;
-    int curBrushX;
-    int curBrushY;
-
-public slots:
-    void setBrushShape(enum brushShape newBrushShape);
-    void setBrushX(int newBrushX);
-    void setBrushY(int newBrushY);
 
 private slots:
     void newMod(const QPoint& pos, const QColor& before, const QColor& after);
     void startEdit();
     void stopEdit();
-    void setBrush(int x, int y, enum brushShape shape = Block);
 
 signals:
     void redoAvailable(bool available) const;

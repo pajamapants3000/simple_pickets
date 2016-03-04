@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT - See LICENSE
  * Created: 02/24/2016
- * Updated: 03/03/2016
+ * Updated: 03/04/2016
  */
 
 #ifndef ICONVIEWGRID_HXX
@@ -15,14 +15,13 @@
 #include <QImage>
 #include <QWidget>
 
-typedef QList<QPoint> shape_t;
-const shape_t shapePoint = { QPoint(0, 0) };
+#include "Brush.hxx"
 
 class IconViewGrid : public QWidget
 {
     Q_OBJECT;
     Q_PROPERTY(QColor penColor READ penColor WRITE setPenColor);
-    Q_PROPERTY(shape_t brush READ brush WRITE setBrush);
+    Q_PROPERTY(Brush brush READ brush WRITE setBrush RESET usePen);
     Q_PROPERTY(QImage iconImage READ iconImage WRITE setIconImage);
     Q_PROPERTY(int zoomFactor READ zoomFactor WRITE setZoomFactor);
 
@@ -30,10 +29,11 @@ public:
     IconViewGrid(QWidget* parent = 0);
 
     QColor penColor() const { return curColor; }
-    shape_t brush() const { return *curBrush; }
+    Brush* brush() const { return curBrush; }
     int zoomFactor() const { return zoom; }
     QImage iconImage() const { return image; }
     QSize sizeHint() const;
+    void usePen();
 
 signals:
     void modified(const QPoint& pos,
@@ -45,13 +45,13 @@ signals:
 
 public slots:
     void setPenColor(const QColor &newColor);
-    void setBrush(const shape_t& newBrush);
+    void setBrush(Brush& newBrush);
     void setZoomFactor(int newZoom);
     void setIconImage(const QImage &newImage);
     void draw(const QPoint& pos, const QColor& color,
-            const shape_t* shape = new shape_t());
+            const Brush* _brush = 0);
     void draw(const QPoint& pos, const bool opaque,
-            const shape_t* shape = new shape_t());
+            const Brush* _brush = 0);
     void toggleGrid();
 
 protected:
@@ -64,9 +64,10 @@ private:
     QRect pixelRect(int i, int j) const;
     void setImagePixel(const QPoint &pos, const QColor& color);
     QColor curColor;
-    const shape_t* curBrush = &shapePoint;
     QImage image;
     int zoom;
+    const Brush simplePen;
+    Brush* curBrush;
     bool gridOn = true;
 
 };
