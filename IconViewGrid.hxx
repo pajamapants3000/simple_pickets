@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT - See LICENSE
  * Created: 02/24/2016
- * Updated: 03/04/2016
+ * Updated: 03/05/2016
  */
 
 #ifndef ICONVIEWGRID_HXX
@@ -34,13 +34,14 @@ public:
     QImage iconImage() const { return image; }
     QSize sizeHint() const;
     void usePen();
+    const Brush simplePen;
 
 signals:
     void modified(const QPoint& pos,
             const QColor& before, const QColor& after) const;
     void zoomed() const;
-    void mousePressed() const;
-    void mouseReleased() const;
+    void beginEdit() const;
+    void endEdit() const;
     void mouseMoved(int i, int j) const;
 
 public slots:
@@ -53,6 +54,7 @@ public slots:
     void draw(const QPoint& pos, const bool opaque,
             const Brush* _brush = 0);
     void toggleGrid();
+    void clearScreen();
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -66,7 +68,6 @@ private:
     QColor curColor;
     QImage image;
     int zoom;
-    const Brush simplePen;
     Brush* curBrush;
     bool gridOn = true;
 

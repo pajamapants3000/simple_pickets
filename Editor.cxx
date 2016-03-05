@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/03/2016
+ * Updated: 03/05/2016
  */
 
 #include <QLabel>
@@ -36,10 +36,10 @@ Editor::Editor(QWidget* parent, Qt::WindowFlags f)/*{{{*/
     heading->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 /*}}}*/
     scroller = new Scroller();/*{{{*/
-    connect(scroller->iconViewGrid, SIGNAL(mousePressed()),
-            this, SLOT(startEdit()));
-    connect(scroller->iconViewGrid, SIGNAL(mouseReleased()),
-            this, SLOT(stopEdit()));
+    connect(scroller->iconViewGrid, SIGNAL(beginEdit()),
+            this, SLOT(startRecord()));
+    connect(scroller->iconViewGrid, SIGNAL(endEdit()),
+            this, SLOT(stopRecord()));
     connect(scroller->iconViewGrid,
             SIGNAL(modified(const QPoint&, const QColor&, const QColor&)),
             this, SLOT(newMod(const QPoint&, const QColor&, const QColor&)));
@@ -62,6 +62,16 @@ Editor::Editor(QWidget* parent, Qt::WindowFlags f)/*{{{*/
 /*}}}*/
     setLayout(mainLayout);
 
+}
+/*}}}*/
+void Editor::newImage(QSize dimensions)/*{{{*/
+{
+    QImage* image = new QImage(dimensions, QImage::Format_ARGB32);
+    image->fill(qRgba(0, 0, 0, 0));
+    scroller->iconViewGrid->setIconImage(*image);
+    // start undo history over
+    history.clear();
+    historyIndex = history.begin();
 }
 /*}}}*/
 bool Editor::writeFile(const QString& fileName)/*{{{*/
@@ -90,6 +100,9 @@ bool Editor::loadFile(const QString& fileName)/*{{{*/
         scroller->iconViewGrid->setIconImage(newImage);
         return true;
     }
+    // start undo history over
+    history.clear();
+    historyIndex = history.begin();
 }
 /*}}}*/
 void Editor::newMod(const QPoint& pos,/*{{{*/
@@ -102,22 +115,27 @@ void Editor::newMod(const QPoint& pos,/*{{{*/
     }
 }
 /*}}}*/
-void Editor::startEdit()/*{{{*/
+void Editor::startRecord()/*{{{*/
 {
     curEdit = new edit;
     recording = true;
 }
 /*}}}*/
-void Editor::stopEdit()/*{{{*/
+void Editor::stopRecord()/*{{{*/
 {
-    if (historyIndex < history.end())
-        history.erase(historyIndex, history.end());
-    history.push_back(*curEdit);
-    historyIndex = history.end();
-    curEdit = 0;
-    recording = false;
-    emit redoAvailable(false);
-    emit undoAvailable(true);
+    // Don't change history if nothing changed
+    if (!curEdit->empty())
+    {
+        // New edit becomes most recent; lose all available redos
+        if (historyIndex < history.end())
+            history.erase(historyIndex, history.end());
+        history.push_back(*curEdit);
+        historyIndex = history.end();
+        curEdit = 0;
+        recording = false;
+        emit redoAvailable(false);
+        emit undoAvailable(true);
+    }
 }
 /*}}}*/
 void Editor::undoEdit()/*{{{*/
@@ -127,7 +145,8 @@ void Editor::undoEdit()/*{{{*/
         --historyIndex;
         QList<struct mod>::ConstIterator citer =
                 (*historyIndex).constBegin();
-        do scroller->iconViewGrid->draw((*citer).pos, (*citer).before);
+        do scroller->iconViewGrid->draw((*citer).pos, (*citer).before,
+                &(scroller->iconViewGrid->simplePen));
         while (++citer != (*historyIndex).constEnd());
         emit redoAvailable(true);
     }
@@ -141,7 +160,8 @@ void Editor::redoEdit()/*{{{*/
     {
         QList<struct mod>::ConstIterator citer =
                 (*historyIndex).constBegin();
-        do scroller->iconViewGrid->draw((*citer).pos, (*citer).after);
+        do scroller->iconViewGrid->draw((*citer).pos, (*citer).after,
+                &(scroller->iconViewGrid->simplePen));
         while (++citer != (*historyIndex).constEnd());
         ++historyIndex;
         emit undoAvailable(true);

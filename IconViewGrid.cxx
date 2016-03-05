@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT; See LICENSE
  * Created: 02/24/2016
- * Updated: 03/04/2016
+ * Updated: 03/05/2016
  */
 
 #include <QPainter>
@@ -103,7 +103,7 @@ QRect IconViewGrid::pixelRect(int i, int j) const/*{{{*/
 /*}}}*/
 void IconViewGrid::mousePressEvent(QMouseEvent* event)/*{{{*/
 {
-    emit mousePressed();
+    emit beginEdit();
     if (event->button() == Qt::LeftButton)
         draw(event->pos(), true);
     else if (event->button() == Qt::RightButton)
@@ -112,7 +112,7 @@ void IconViewGrid::mousePressEvent(QMouseEvent* event)/*{{{*/
 /*}}}*/
 void IconViewGrid::mouseReleaseEvent(QMouseEvent* event)/*{{{*/
 {
-    emit mouseReleased();
+    emit endEdit();
     QWidget::mouseReleaseEvent(event);
 }
 /*}}}*/
@@ -179,5 +179,22 @@ void IconViewGrid::toggleGrid()/*{{{*/
 void IconViewGrid::usePen()/*{{{*/
 {
     curBrush = new Brush(simplePen);
+}
+/*}}}*/
+void IconViewGrid::clearScreen()/*{{{*/
+{
+    emit beginEdit();
+    for (int i = 0; i < image.rect().width(); ++i)
+        for (int j = 0; j < image.rect().height(); ++j)
+        {
+            QColor before, after;
+            QPoint pos(i * zoom, j * zoom);
+            before = QColor::fromRgba(iconImage().pixel(i, j));
+            after = QColor(0, 0, 0, 0);
+            setImagePixel(pos, after);
+            if (before != after)
+                emit modified(pos, before, after);
+        }
+    emit endEdit();
 }
 /*}}}*/

@@ -6,7 +6,7 @@
  * License: MIT
  * Notes  : This one will be more elaborate, with a color setter
  * Created: 02/15/2016
- * Updated: 03/04/2016
+ * Updated: 03/05/2016
  */
 
 #ifndef EDITOR_HXX
@@ -29,6 +29,7 @@ public:
     ARGBSetterWidget* setters;
     bool writeFile(const QString& fileName);
     bool loadFile(const QString& fileName);
+    void newImage(QSize dimensions);
     void undoEdit();
     void redoEdit();
 
@@ -51,8 +52,8 @@ private:
 
 private slots:
     void newMod(const QPoint& pos, const QColor& before, const QColor& after);
-    void startEdit();
-    void stopEdit();
+    void startRecord();
+    void stopRecord();
 
 signals:
     void redoAvailable(bool available) const;

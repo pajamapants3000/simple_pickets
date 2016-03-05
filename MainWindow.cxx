@@ -5,7 +5,7 @@
  * Author : Tommy Lincoln <pajamapants3000@gmail.com>
  * License: MIT
  * Created: 02/21/2016
- * Updated: 03/04/2016
+ * Updated: 03/05/2016
  * TODO: Organize functions, slots, etc.
  */
 
@@ -98,7 +98,8 @@ void MainWindow::createActions()/*{{{*/
     clearAction->setIcon(QIcon(":/images/clear.png"));
     clearAction->setShortcut(tr("Ctrl+L"));
     clearAction->setStatusTip(tr("Clear the image"));
-    connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
+    connect(clearAction, SIGNAL(triggered()),
+            editor->scroller->iconViewGrid, SLOT(clearScreen()));
 
     undoAction = new QAction(tr("&Undo"), this);
     undoAction->setIcon(QIcon(":/images/undo.png"));
@@ -198,8 +199,8 @@ void MainWindow::createToolBars()/*{{{*/
             editor->scroller->iconViewGrid, SLOT(setZoomFactor(int)));
     zoomer->setZoom(zoomer->defaultZoom);
 
-    toolBar->addAction(ellipseBrushAction);
     toolBar->addAction(ringBrushAction);
+    toolBar->addAction(ellipseBrushAction);
     toolBar->addAction(rectangleBrushAction);
     toolBar->addAction(blockBrushAction);
     toolBar->addSeparator();
@@ -218,21 +219,12 @@ void MainWindow::iconModified()/*{{{*/
 {
     setWindowModified(true);
 }/*}}}*/
-void MainWindow::clear()/*{{{*/
-{
-    QImage* image = new QImage(dimensions, QImage::Format_ARGB32);
-    image->fill(qRgba(0, 0, 0, 0));
-    editor->scroller->iconViewGrid->setIconImage(*image);
-}
-/*}}}*/
 void MainWindow::newFile()/*{{{*/
 {
     if (okToContinue() && getDimensions())
     {
+        editor->newImage(dimensions);
         curFile = QString();
-        QImage* image = new QImage(dimensions, QImage::Format_ARGB32);
-        image->fill(qRgba(0, 0, 0, 0));
-        editor->scroller->iconViewGrid->setIconImage(*image);
         setWindowModified(false);
         setWindowTitle(QString("[untitled][*] | Simple Pickets"));
     }
